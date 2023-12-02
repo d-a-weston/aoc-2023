@@ -54,3 +54,7 @@ func findNumInLine(line string) int {
 
 	return num
 }
+
+func replaceTokens(line string) string {
+	return "111"
+}
