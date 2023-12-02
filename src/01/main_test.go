@@ -35,6 +35,7 @@ func TestReplaceTokens(t *testing.T) {
 	}{
 		{"Replace one with 1", "1one1", "111"},
 		{"Replace multiple numbers", "two1nine", "219"},
+		{"Replace numbers in the order they appear", "eightwothree", "8wo3"},
 	}
 
 	for _, test := range tests {
