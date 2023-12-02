@@ -26,3 +26,23 @@ func TestFindNumInLine(t *testing.T) {
 		})
 	}
 }
+
+func TestReplaceTokens(t *testing.T) {
+	var tests = []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{"Replace one with 1", "1one1", "111"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			actual := replaceTokens(test.input)
+
+			if actual != test.expected {
+				t.Errorf("Expected %s, got %s", test.expected, actual)
+			}
+		})
+	}
+}
