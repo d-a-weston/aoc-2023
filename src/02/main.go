@@ -18,10 +18,31 @@ func main() {
 
 	fileScanner := bufio.NewScanner(file)
 
+	total := 0
+	gameNumber := 0
+
 	for fileScanner.Scan() {
 		line := fileScanner.Text()
-		fmt.Println(line)
+		gameNumber++
+
+		if err != nil {
+			panic(err)
+		}
+
+		bagContents := map[string]int{
+			"red":   12,
+			"green": 13,
+			"blue":  14,
+		}
+
+		colors := colorMax(line)
+
+		if gameIsPossible(bagContents, colors) {
+			total += gameNumber
+		}
 	}
+
+	fmt.Println(total)
 }
 
 func colorMax(line string) map[string]int {
