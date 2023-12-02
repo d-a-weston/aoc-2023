@@ -36,6 +36,10 @@ func TestReplaceTokens(t *testing.T) {
 		{"Replace one with 1", "1one1", "111"},
 		{"Replace multiple numbers", "two1nine", "219"},
 		{"Replace numbers in the order they appear", "eightwothree", "8wo3"},
+		{"Replace while preserving numbers", "xtwone3four", "x2ne34"},
+		{"Additional AoC test case #1", "4nineeightseven2", "49872"},
+		{"Additional AoC test case #2", "zoneight234", "z1ight234"},
+		{"Additional AoC test case #3", "7pqrstsixteen", "7pqrst6teen"},
 	}
 
 	for _, test := range tests {
