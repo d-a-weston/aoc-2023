@@ -10,7 +10,8 @@ func TestColorMax(t *testing.T) {
 		input    string
 		expected map[string]int
 	}{
-		{"Color max", "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green", map[string]int{"blue": 6, "red": 4, "green": 2}},
+		{"Color max #1", "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green", map[string]int{"blue": 6, "red": 4, "green": 2}},
+		{"Color max #2", "Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue", map[string]int{"blue": 4, "red": 1, "green": 3}},
 	}
 
 	for _, test := range tests {
