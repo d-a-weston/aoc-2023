@@ -12,6 +12,8 @@ func TestFindNumInLine(t *testing.T) {
 	}{
 		{"Numbers at first and last", "1abc2", 12},
 		{"Numbers not at first and last", "pqr3stu8vwx", 38},
+		{"More than 2 numbers", "a1b2c3d4e5f", 15},
+		{"Only one number", "treb7uchet", 77},
 	}
 
 	for _, test := range tests {
