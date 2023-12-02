@@ -58,15 +58,15 @@ func findNumInLine(line string) int {
 
 func replaceTokens(line string) string {
 	tokens := map[string]string{
-		"one":   "1",
-		"two":   "2",
-		"three": "3",
-		"four":  "4",
-		"five":  "5",
-		"six":   "6",
-		"seven": "7",
-		"eight": "8",
-		"nine":  "9",
+		"one":   "on1e",
+		"two":   "tw2o",
+		"three": "thre3e",
+		"four":  "fou4r",
+		"five":  "fiv5e",
+		"six":   "si6x",
+		"seven": "seve7n",
+		"eight": "eigh8t",
+		"nine":  "nin9e",
 	}
 
 	matchesRemaining := true
