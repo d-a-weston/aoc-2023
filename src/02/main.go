@@ -56,5 +56,13 @@ func colorMax(line string) map[string]int {
 }
 
 func gameIsPossible(bagContents map[string]int, colors map[string]int) bool {
-	return true
+	isPossible := true
+
+	for color, count := range colors {
+		if count > bagContents[color] {
+			isPossible = false
+		}
+	}
+
+	return isPossible
 }
