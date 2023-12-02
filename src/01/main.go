@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strconv"
@@ -8,13 +9,22 @@ import (
 
 // https://adventofcode.com/2023/day/1
 func main() {
-	data, err := os.ReadFile("input.txt")
+	file, err := os.Open("input.txt")
 
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(string(data))
+	fileScanner := bufio.NewScanner(file)
+
+	total := 0
+
+	for fileScanner.Scan() {
+		num := findNumInLine(fileScanner.Text())
+		total += num
+	}
+
+	fmt.Println(total)
 }
 
 func findNumInLine(line string) int {
