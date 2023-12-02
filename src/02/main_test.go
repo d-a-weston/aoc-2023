@@ -43,6 +43,8 @@ func TestGameIsPossible(t *testing.T) {
 		expected bool
 	}{
 		{"Game is possible #1", map[string]int{"blue": 6, "red": 4, "green": 2}, true},
+		{"Game is possible #2", map[string]int{"blue": 4, "red": 1, "green": 3}, true},
+		{"Game is possible #3", map[string]int{"blue": 6, "red": 20, "green": 13}, false},
 	}
 
 	for _, test := range tests {
