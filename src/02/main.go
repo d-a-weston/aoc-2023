@@ -54,3 +54,7 @@ func colorMax(line string) map[string]int {
 
 	return colors
 }
+
+func gameIsPossible(bagContents map[string]int, colors map[string]int) bool {
+	return true
+}
