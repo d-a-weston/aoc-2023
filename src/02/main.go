@@ -21,3 +21,7 @@ func main() {
 		fmt.Println(line)
 	}
 }
+
+func colorMax(line string) map[string]int {
+	return map[string]int{"blue": 6, "red": 4, "green": 2}
+}
