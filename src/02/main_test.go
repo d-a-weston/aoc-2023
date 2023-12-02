@@ -29,3 +29,29 @@ func TestColorMax(t *testing.T) {
 		})
 	}
 }
+
+func TestGameIsPossible(t *testing.T) {
+	bagContents := map[string]int{
+		"red":   12,
+		"green": 13,
+		"blue":  14,
+	}
+
+	var tests = []struct {
+		name     string
+		input    map[string]int
+		expected bool
+	}{
+		{"Game is possible #1", map[string]int{"blue": 6, "red": 4, "green": 2}, true},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			actual := gameIsPossible(bagContents, test.input)
+
+			if actual != test.expected {
+				t.Errorf("Expected %t, got %t", test.expected, actual)
+			}
+		})
+	}
+}
