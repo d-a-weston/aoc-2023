@@ -21,7 +21,11 @@ func main() {
 	total := 0
 
 	for fileScanner.Scan() {
-		num := findNumInLine(fileScanner.Text())
+		line := fileScanner.Text()
+		tokenReplacedLine := replaceTokens(line)
+		num := findNumInLine(tokenReplacedLine)
+
+		fmt.Printf("%s -> %s -> %d\n", line, tokenReplacedLine, num)
 		total += num
 	}
 
