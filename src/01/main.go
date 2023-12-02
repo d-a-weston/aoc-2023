@@ -15,3 +15,7 @@ func main() {
 
 	fmt.Println(string(data))
 }
+
+func findNumInLine(line string) int {
+	return 12
+}
