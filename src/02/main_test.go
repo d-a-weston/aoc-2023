@@ -45,6 +45,8 @@ func TestGameIsPossible(t *testing.T) {
 		{"Game is possible #1", map[string]int{"blue": 6, "red": 4, "green": 2}, true},
 		{"Game is possible #2", map[string]int{"blue": 4, "red": 1, "green": 3}, true},
 		{"Game is possible #3", map[string]int{"blue": 6, "red": 20, "green": 13}, false},
+		{"Game is possible #4", map[string]int{"blue": 15, "red": 14, "green": 3}, false},
+		{"Game is possible #5", map[string]int{"blue": 2, "red": 6, "green": 3}, true},
 	}
 
 	for _, test := range tests {
