@@ -69,8 +69,30 @@ func replaceTokens(line string) string {
 		"nine":  "9",
 	}
 
-	for token, replacement := range tokens {
-		line = strings.ReplaceAll(line, token, replacement)
+	matchesRemaining := true
+
+	for matchesRemaining {
+		matchIndex := len(line)
+		matchValue := ""
+
+		for token := range tokens {
+			index := strings.Index(line, token)
+
+			if index == -1 {
+				continue
+			}
+
+			if index < matchIndex {
+				matchIndex = index
+				matchValue = token
+			}
+		}
+
+		if matchValue != "" {
+			line = strings.Replace(line, matchValue, tokens[matchValue], 1)
+		} else {
+			matchesRemaining = false
+		}
 	}
 
 	return line
