@@ -14,6 +14,7 @@ func TestCheckSurroundingCells(t *testing.T) {
 	}{
 		{"Find single digit number with symbol", [][]string{{".", ".", "."}, {".", "1", "."}, {"*", ".", "."}}, 1, 1, true},
 		{"Find two number digit with symbol", [][]string{{".", ".", ".", "*"}, {".", "1", "2", "."}, {".", ".", ".", "."}}, 1, 2, true},
+		{"Invalid case", [][]string{{".", ".", ".", "*"}, {".", "3", ".", "."}, {".", ".", ".", "."}}, 1, 1, false},
 	}
 
 	for _, test := range tests {
