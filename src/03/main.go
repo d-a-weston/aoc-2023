@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+var numbers = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
+
 func main() {
 	file, err := os.Open("input.txt")
 
@@ -28,37 +30,14 @@ func main() {
 
 	total := 0
 
-	numbers := []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
-
-	start := -1
-	end := -1
-	number := ""
-
 	for i := 0; i < len(input); i++ {
 		for j := 0; j < len(input[i]); j++ {
-			if slices.Contains(numbers, input[i][j]) {
-				if start == -1 {
-					start = j
+			if input[i][j] == "*" {
+				partPower := findGearParts(input, j, i)
+
+				if partPower != -1 {
+					total += partPower
 				}
-
-				end = j
-
-				number += input[i][j]
-			}
-
-			if (!slices.Contains(numbers, input[i][j]) && start != -1 && end != -1) || j == len(input[i])-1 {
-				numInt, _ := strconv.Atoi(number)
-				isValidPart := checkSurroundingCells(input, start, end, i)
-
-				fmt.Printf("Found %v part %s at %d,%d,%d -> %d\n", isValidPart, number, i, start, end, total)
-
-				if isValidPart {
-					total += numInt
-				}
-
-				start = -1
-				end = -1
-				number = ""
 			}
 		}
 	}
@@ -88,4 +67,60 @@ func checkSurroundingCells(input [][]string, start int, end int, lineNumber int)
 	}
 
 	return false
+}
+
+func findGearParts(input [][]string, index int, lineNumber int) int {
+	potentialParts := map[int]bool{}
+
+	for i := lineNumber - 1; i <= lineNumber+1; i++ {
+		if i < 0 || i >= len(input) {
+			continue
+		}
+
+		for j := index - 1; j <= index+1; j++ {
+			if j < 0 || j >= len(input[i]) {
+				continue
+			}
+
+			if slices.Contains(numbers, input[i][j]) {
+				potentialParts[findNumber(input[i], j)] = true
+			}
+		}
+	}
+
+	if len(potentialParts) != 2 {
+		return -1
+	}
+
+	value := 1
+
+	for part := range potentialParts {
+		value *= part
+	}
+
+	return value
+}
+
+func findNumber(input []string, index int) int {
+	number := ""
+
+	for i := index; i < len(input); i++ {
+		if slices.Contains(numbers, input[i]) {
+			number = number + input[i]
+		} else {
+			break
+		}
+	}
+
+	for i := index - 1; i >= 0; i-- {
+		if slices.Contains(numbers, input[i]) {
+			number = input[i] + number
+		} else {
+			break
+		}
+	}
+
+	numberInt, _ := strconv.Atoi(number)
+
+	return numberInt
 }
