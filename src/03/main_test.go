@@ -8,16 +8,17 @@ func TestCheckSurroundingCells(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    [][]string
-		x        int
-		y        int
+		start    int
+		finish   int
 		expected bool
 	}{
-		{"Find single digit with symbol", [][]string{{".", ".", "."}, {".", "1", "."}, {"*", ".", "."}}, 1, 1, true},
+		{"Find single digit number with symbol", [][]string{{".", ".", "."}, {".", "1", "."}, {"*", ".", "."}}, 1, 1, true},
+		{"Find two number digit with symbol", [][]string{{".", ".", ".", "*"}, {".", "1", "2", "."}, {".", ".", ".", "."}}, 1, 2, true},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			result := checkSurroundingCells(test.input, test.x, test.y)
+			result := checkSurroundingCells(test.input, test.start, test.finish)
 
 			if result != test.expected {
 				t.Errorf("Expected %v, got %v", test.expected, result)
