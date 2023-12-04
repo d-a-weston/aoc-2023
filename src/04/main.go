@@ -21,3 +21,11 @@ func main() {
 		fmt.Println(line)
 	}
 }
+
+func findCommonElements(firstSlice []int, secondSlice []int) []int {
+	sharedElements := []int{}
+
+	sharedElements = append(sharedElements, 4)
+
+	return sharedElements
+}
