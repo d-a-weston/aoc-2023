@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -15,11 +16,42 @@ func main() {
 
 	fileScanner := bufio.NewScanner(file)
 
+	total := 0
+	gameNumber := 0
+
 	for fileScanner.Scan() {
 		line := fileScanner.Text()
 
-		fmt.Println(line)
+		gameNumber++
+
+		removePrefix := strings.Split(line, ":")
+
+		numbers := strings.Split(removePrefix[1], "|")
+		winningNumbers := strings.Fields(numbers[0])
+		playersNumbers := strings.Fields(numbers[1])
+
+		commonElements := findCommonElements(winningNumbers, playersNumbers)
+
+		gamePoints := 0
+
+		if len(commonElements) == 1 {
+			gamePoints = 1
+		}
+
+		if len(commonElements) > 1 {
+			gamePoints = 1
+
+			for i := 0; i < len(commonElements)-1; i++ {
+				gamePoints *= 2
+			}
+		}
+
+		fmt.Printf("Game %d has %d matches, worth %d points\n", gameNumber, len(commonElements), gamePoints)
+
+		total += gamePoints
 	}
+
+	fmt.Println(int(total))
 }
 
 func findCommonElements(firstSlice []string, secondSlice []string) []string {
