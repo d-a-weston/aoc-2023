@@ -7,13 +7,13 @@ import (
 func TestNumSharedElements(t *testing.T) {
 	tests := []struct {
 		name        string
-		firstSlice  []int
-		secondSlice []int
-		expected    []int
+		firstSlice  []string
+		secondSlice []string
+		expected    []string
 	}{
-		{"Shares one element", []int{1, 2, 3, 4}, []int{4, 5, 6}, []int{4}},
-		{"Shares two elements", []int{7, 8, 9}, []int{9, 10, 11, 8}, []int{8, 9}},
-		{"Shares no elements", []int{12, 13, 14}, []int{15, 16, 17}, []int{}},
+		{"Shares one element", []string{"1", "2", "3", "4"}, []string{"4", "5", "6"}, []string{"4"}},
+		{"Shares two elements", []string{"7", "8", "9"}, []string{"9", "10", "11", "8"}, []string{"8", "9"}},
+		{"Shares no elements", []string{"12", "13", "14"}, []string{"15", "16", "17"}, []string{}},
 	}
 
 	for _, test := range tests {
@@ -21,12 +21,12 @@ func TestNumSharedElements(t *testing.T) {
 			actual := findCommonElements(test.firstSlice, test.secondSlice)
 
 			if len(actual) != len(test.expected) {
-				t.Errorf("Expected %d, got %d", test.expected, actual)
+				t.Errorf("Expected %s, got %s", test.expected, actual)
 			}
 
 			for i, v := range actual {
 				if v != test.expected[i] {
-					t.Errorf("Expected %d, got %d", test.expected, actual)
+					t.Errorf("Expected %s, got %s", test.expected, actual)
 				}
 			}
 		})
