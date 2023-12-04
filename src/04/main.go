@@ -18,6 +18,7 @@ func main() {
 
 	total := 0
 	gameNumber := 0
+	copies := map[int]int{}
 
 	for fileScanner.Scan() {
 		line := fileScanner.Text()
@@ -32,26 +33,16 @@ func main() {
 
 		commonElements := findCommonElements(winningNumbers, playersNumbers)
 
-		gamePoints := 0
+		numCommonElements := len(commonElements)
 
-		if len(commonElements) == 1 {
-			gamePoints = 1
+		for i := gameNumber + 1; i <= gameNumber+numCommonElements; i++ {
+			copies[i] += 1 + copies[gameNumber]
 		}
 
-		if len(commonElements) > 1 {
-			gamePoints = 1
-
-			for i := 0; i < len(commonElements)-1; i++ {
-				gamePoints *= 2
-			}
-		}
-
-		fmt.Printf("Game %d has %d matches, worth %d points\n", gameNumber, len(commonElements), gamePoints)
-
-		total += gamePoints
+		total += 1 + copies[gameNumber]
 	}
 
-	fmt.Println(int(total))
+	fmt.Println(total)
 }
 
 func findCommonElements(firstSlice []string, secondSlice []string) []string {
