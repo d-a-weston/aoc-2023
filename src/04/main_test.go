@@ -12,6 +12,7 @@ func TestNumSharedElements(t *testing.T) {
 		expected    []int
 	}{
 		{"Shares one element", []int{1, 2, 3, 4}, []int{4, 5, 6}, []int{4}},
+		{"Shares two elements", []int{7, 8, 9}, []int{9, 10, 11, 8}, []int{8, 9}},
 	}
 
 	for _, test := range tests {

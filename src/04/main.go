@@ -25,7 +25,13 @@ func main() {
 func findCommonElements(firstSlice []int, secondSlice []int) []int {
 	sharedElements := []int{}
 
-	sharedElements = append(sharedElements, 4)
+	for _, v1 := range firstSlice {
+		for _, v2 := range secondSlice {
+			if v1 == v2 {
+				sharedElements = append(sharedElements, v1)
+			}
+		}
+	}
 
 	return sharedElements
 }
