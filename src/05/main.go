@@ -24,7 +24,17 @@ func main() {
 		line := fileScanner.Text()
 
 		if strings.HasPrefix(line, "seeds: ") {
-			seeds = strings.Fields(strings.TrimPrefix(line, "seeds: "))
+			seedRanges := strings.Fields(strings.TrimPrefix(line, "seeds: "))
+
+			for i := 0; i < len(seedRanges); i += 2 {
+				startingSeed, _ := strconv.Atoi(seedRanges[i])
+				currentSeedRange, _ := strconv.Atoi(seedRanges[i+1])
+
+				for j := 0; j < currentSeedRange; j++ {
+					nextSeed := strconv.Itoa(startingSeed + j)
+					seeds = append(seeds, nextSeed)
+				}
+			}
 
 			continue
 		}
