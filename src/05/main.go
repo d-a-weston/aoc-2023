@@ -40,3 +40,17 @@ func createMap(lines []string) map[string]string {
 
 	return newMap
 }
+
+func findNextMap(maps []string, currentMap string) string {
+	var nextMap string
+
+	mapPrefix := strings.Split(currentMap, "-")[2]
+
+	for _, v := range maps {
+		if strings.HasPrefix(v, mapPrefix) {
+			nextMap = v
+		}
+	}
+
+	return nextMap
+}
