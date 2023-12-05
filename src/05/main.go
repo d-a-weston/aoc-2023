@@ -13,15 +13,56 @@ func main() {
 
 	fileScanner := bufio.NewScanner(file)
 
+	maps := map[string]map[string]string{}
+	mapNames := []string{}
+
+	var mapName string
+	var mapBlock []string
+
+	var seeds []string
+
 	for fileScanner.Scan() {
 		line := fileScanner.Text()
 
-		fmt.Println(line)
+		if strings.HasPrefix(line, "seeds: ") {
+			seeds = strings.Fields(strings.TrimPrefix(line, "seeds: "))
+
+			continue
+		}
+
+		if strings.Contains(line, "-") {
+			if mapName != "" {
+				maps[mapName] = createMap(mapBlock)
+
+				mapName = ""
+				mapBlock = []string{}
+			}
+
+			mapName = strings.Fields(line)[0]
+			mapNames = append(mapNames, mapName)
+
+			continue
+		}
+
+		if line != "" {
+			mapBlock = append(mapBlock, line)
+		}
 	}
+
+	fmt.Println(maps)
+	fmt.Println(mapNames)
+	fmt.Println(seeds)
 }
 
+/*
+ * Deprecated
+ *
+ * The memory and compute required for this is silly, going to do something different
+ */
 func createMap(lines []string) map[string]string {
 	newMap := map[string]string{}
+
+	fmt.Println(lines)
 
 	for _, line := range lines {
 		values := strings.Split(line, " ")
