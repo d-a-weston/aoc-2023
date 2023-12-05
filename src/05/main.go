@@ -13,11 +13,10 @@ func main() {
 
 	fileScanner := bufio.NewScanner(file)
 
-	maps := map[string]map[string]string{}
+	maps := map[string][][]string{}
 	mapNames := []string{}
 
 	var mapName string
-	var mapBlock []string
 
 	var seeds []string
 
@@ -31,13 +30,6 @@ func main() {
 		}
 
 		if strings.Contains(line, "-") {
-			if mapName != "" {
-				maps[mapName] = createMap(mapBlock)
-
-				mapName = ""
-				mapBlock = []string{}
-			}
-
 			mapName = strings.Fields(line)[0]
 			mapNames = append(mapNames, mapName)
 
@@ -45,13 +37,53 @@ func main() {
 		}
 
 		if line != "" {
-			mapBlock = append(mapBlock, line)
+			splitLine := strings.Fields(line)
+			maps[mapName] = append(maps[mapName], splitLine)
 		}
 	}
 
-	fmt.Println(maps)
-	fmt.Println(mapNames)
-	fmt.Println(seeds)
+	var closestSeed int
+
+	for _, seed := range seeds {
+		currentMap := "seed-to-soil"
+
+		currentValue, _ := strconv.Atoi(seed)
+		prevValue := currentValue
+
+		for currentMap != "" {
+			prevValue = currentValue
+			fmt.Printf("Seed: %s, Current Value: %d, Current Map: %s\n", seed, currentValue, currentMap)
+
+			for _, slice := range maps[currentMap] {
+				sourceCategory, _ := strconv.Atoi(slice[1])
+				rangeValue, _ := strconv.Atoi(slice[2])
+
+				lowerBound := sourceCategory
+				upperBound := sourceCategory + rangeValue
+
+				if currentValue >= lowerBound && currentValue <= upperBound {
+					destinationCategory, _ := strconv.Atoi(slice[0])
+
+					sourceDiff := currentValue - sourceCategory
+
+					currentValue = destinationCategory + sourceDiff
+					currentMap = findNextMap(mapNames, currentMap)
+
+					break
+				}
+			}
+
+			if prevValue == currentValue {
+				currentMap = findNextMap(mapNames, currentMap)
+			}
+		}
+
+		if closestSeed == 0 || currentValue < closestSeed {
+			closestSeed = currentValue
+		}
+	}
+
+	fmt.Println(closestSeed)
 }
 
 /*
@@ -61,8 +93,6 @@ func main() {
  */
 func createMap(lines []string) map[string]string {
 	newMap := map[string]string{}
-
-	fmt.Println(lines)
 
 	for _, line := range lines {
 		values := strings.Split(line, " ")
@@ -83,9 +113,13 @@ func createMap(lines []string) map[string]string {
 }
 
 func findNextMap(maps []string, currentMap string) string {
-	var nextMap string
+	nextMap := ""
 
-	mapPrefix := strings.Split(currentMap, "-")[2]
+	splitCurrentMap := strings.Split(currentMap, "-")
+
+	fmt.Printf("currentMap: %s, splitCurrentMap: %v, len(splitCurrentMap): %d\n", currentMap, splitCurrentMap, len(splitCurrentMap))
+
+	mapPrefix := splitCurrentMap[2]
 
 	for _, v := range maps {
 		if strings.HasPrefix(v, mapPrefix) {
