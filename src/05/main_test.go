@@ -11,6 +11,7 @@ func TestCreateMap(t *testing.T) {
 		expected map[string]string
 	}{
 		{"Works with single entry", []string{"0 10 2"}, map[string]string{"0": "10", "1": "11"}},
+		{"Works with multiple entries", []string{"1 3 3", "4 9 2"}, map[string]string{"1": "3", "2": "4", "3": "5", "4": "9", "5": "10"}},
 	}
 
 	for _, test := range tests {
