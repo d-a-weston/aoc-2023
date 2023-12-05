@@ -40,6 +40,8 @@ func TestFindNextMap(t *testing.T) {
 		expected   string
 	}{
 		{"Finds next map", "seed-to-soil", "soil-to-fertilizer"},
+		{"Finds next map", "soil-to-fertilizer", "fertilizer-to-water"},
+		{"Finds no map", "foo-to-bar", ""},
 	}
 
 	for _, test := range tests {
