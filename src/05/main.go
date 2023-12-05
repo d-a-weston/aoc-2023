@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -16,4 +18,25 @@ func main() {
 
 		fmt.Println(line)
 	}
+}
+
+func createMap(lines []string) map[string]string {
+	newMap := map[string]string{}
+
+	for _, line := range lines {
+		values := strings.Split(line, " ")
+
+		key, _ := strconv.Atoi(values[0])
+		value, _ := strconv.Atoi(values[1])
+		n, _ := strconv.Atoi(values[2])
+
+		for i := 0; i < n; i++ {
+			newMap[strconv.Itoa(key)] = strconv.Itoa(value)
+
+			key++
+			value++
+		}
+	}
+
+	return newMap
 }
