@@ -12,6 +12,8 @@ func TestNumValidSolutions(t *testing.T) {
 		expected int
 	}{
 		{"Find number of valid solutions", 7, 9, 4},
+		{"Find number of valid solutions", 15, 40, 8},
+		{"Find number of valid solutions", 30, 200, 9},
 	}
 
 	for _, test := range tests {

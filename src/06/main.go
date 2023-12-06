@@ -21,5 +21,17 @@ func main() {
 }
 
 func numValidSolutions(time int, distance int) int {
-	return 4
+	totalSolutions := 0
+
+	for i := 0; i <= time; i++ {
+		velocity := i
+		remainingTime := time - i
+		distanceTravelled := velocity * remainingTime
+
+		if distanceTravelled > distance {
+			totalSolutions++
+		}
+	}
+
+	return totalSolutions
 }
