@@ -19,3 +19,7 @@ func main() {
 
 	file.Close()
 }
+
+func numValidSolutions(time int, distance int) int {
+	return 4
+}
