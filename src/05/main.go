@@ -24,17 +24,7 @@ func main() {
 		line := fileScanner.Text()
 
 		if strings.HasPrefix(line, "seeds: ") {
-			seedRanges := strings.Fields(strings.TrimPrefix(line, "seeds: "))
-
-			for i := 0; i < len(seedRanges); i += 2 {
-				startingSeed, _ := strconv.Atoi(seedRanges[i])
-				currentSeedRange, _ := strconv.Atoi(seedRanges[i+1])
-
-				for j := 0; j < currentSeedRange; j++ {
-					nextSeed := strconv.Itoa(startingSeed + j)
-					seeds = append(seeds, nextSeed)
-				}
-			}
+			seeds = strings.Fields(strings.TrimPrefix(line, "seeds: "))
 
 			continue
 		}
@@ -52,31 +42,31 @@ func main() {
 		}
 	}
 
-	var closestSeed int
+	closestSeed := 0
+	validLocation := false
 
-	for _, seed := range seeds {
-		currentMap := "seed-to-soil"
+	for !validLocation {
+		currentMap := "humidity-to-location"
 
-		currentValue, _ := strconv.Atoi(seed)
-		prevValue := currentValue
+		currentValue := closestSeed
+		prevValue := closestSeed
 
 		for currentMap != "" {
 			prevValue = currentValue
-			fmt.Printf("Seed: %s, Current Value: %d, Current Map: %s\n", seed, currentValue, currentMap)
 
 			for _, slice := range maps[currentMap] {
-				sourceCategory, _ := strconv.Atoi(slice[1])
+				destinationCategory, _ := strconv.Atoi(slice[0])
 				rangeValue, _ := strconv.Atoi(slice[2])
 
-				lowerBound := sourceCategory
-				upperBound := sourceCategory + rangeValue
+				lowerBound := destinationCategory
+				upperBound := destinationCategory + rangeValue
 
-				if currentValue >= lowerBound && currentValue <= upperBound {
-					destinationCategory, _ := strconv.Atoi(slice[0])
+				if currentValue >= lowerBound && currentValue < upperBound {
+					sourceCategory, _ := strconv.Atoi(slice[1])
 
-					sourceDiff := currentValue - sourceCategory
+					destinationDiff := currentValue - destinationCategory
 
-					currentValue = destinationCategory + sourceDiff
+					currentValue = sourceCategory + destinationDiff
 					currentMap = findNextMap(mapNames, currentMap)
 
 					break
@@ -88,38 +78,22 @@ func main() {
 			}
 		}
 
-		if closestSeed == 0 || currentValue < closestSeed {
-			closestSeed = currentValue
+		for i := 0; i < len(seeds); i += 2 {
+			seedStart, _ := strconv.Atoi(seeds[i])
+			seedRange, _ := strconv.Atoi(seeds[i+1])
+
+			if currentValue >= seedStart && currentValue <= seedStart+seedRange {
+				validLocation = true
+				break
+			}
+		}
+
+		if !validLocation {
+			closestSeed++
 		}
 	}
 
 	fmt.Println(closestSeed)
-}
-
-/*
- * Deprecated
- *
- * The memory and compute required for this is silly, going to do something different
- */
-func createMap(lines []string) map[string]string {
-	newMap := map[string]string{}
-
-	for _, line := range lines {
-		values := strings.Split(line, " ")
-
-		key, _ := strconv.Atoi(values[0])
-		value, _ := strconv.Atoi(values[1])
-		n, _ := strconv.Atoi(values[2])
-
-		for i := 0; i < n; i++ {
-			newMap[strconv.Itoa(key)] = strconv.Itoa(value)
-
-			key++
-			value++
-		}
-	}
-
-	return newMap
 }
 
 func findNextMap(maps []string, currentMap string) string {
@@ -127,12 +101,13 @@ func findNextMap(maps []string, currentMap string) string {
 
 	splitCurrentMap := strings.Split(currentMap, "-")
 
-	fmt.Printf("currentMap: %s, splitCurrentMap: %v, len(splitCurrentMap): %d\n", currentMap, splitCurrentMap, len(splitCurrentMap))
-
-	mapPrefix := splitCurrentMap[2]
+	mapPrefix := splitCurrentMap[0]
 
 	for _, v := range maps {
-		if strings.HasPrefix(v, mapPrefix) {
+
+		mapSplit := strings.Split(v, "-")
+
+		if mapSplit[2] == mapPrefix {
 			nextMap = v
 		}
 	}
