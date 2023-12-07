@@ -20,6 +20,7 @@ var handTypes = map[int]string{
 }
 
 var cardValues = map[string]int{
+	"J": 0,
 	"2": 1,
 	"3": 2,
 	"4": 3,
@@ -29,7 +30,6 @@ var cardValues = map[string]int{
 	"8": 7,
 	"9": 8,
 	"T": 9,
-	"J": 10,
 	"Q": 11,
 	"K": 12,
 	"A": 13,
@@ -80,8 +80,15 @@ func getHandType(hand string) int {
 	var handValue int
 
 	cardsInHand := map[string]int{}
+	numJokers := 0
 
 	for _, card := range hand {
+		if card == 'J' {
+			numJokers++
+
+			continue
+		}
+
 		cardsInHand[string(card)]++
 	}
 
@@ -92,6 +99,16 @@ func getHandType(hand string) int {
 			numOfSameCards = append(numOfSameCards, value)
 		}
 	}
+
+	sort.Ints(numOfSameCards)
+
+	if len(numOfSameCards) == 0 {
+		handValue = 7
+
+		return handValue
+	}
+
+	numOfSameCards[len(numOfSameCards)-1] += numJokers
 
 	if slices.Contains(numOfSameCards, 5) {
 		handValue = 7
