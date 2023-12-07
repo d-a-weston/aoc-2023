@@ -82,3 +82,28 @@ func getHandType(hand string) int {
 
 	return handValue
 }
+
+func doesHandWin(hand1 string, hand2 string) bool {
+	handWins := false
+
+	hand1Value := getHandType(hand1)
+	hand2Value := getHandType(hand2)
+
+	if hand1Value > hand2Value {
+		handWins = true
+	} else if hand1Value < hand2Value {
+		handWins = false
+	} else {
+		for i := 0; i < len(hand1); i++ {
+			if cardValues[string(hand1[i])] > cardValues[string(hand2[i])] {
+				handWins = true
+				break
+			} else if cardValues[string(hand1[i])] < cardValues[string(hand2[i])] {
+				handWins = false
+				break
+			}
+		}
+	}
+
+	return handWins
+}

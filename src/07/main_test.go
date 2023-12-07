@@ -29,3 +29,28 @@ func TestGetHandType(t *testing.T) {
 		})
 	}
 }
+
+func TestDoesHandWin(t *testing.T) {
+	tests := []struct {
+		name     string
+		hand1    string
+		hand2    string
+		expected bool
+	}{
+		{"Returns true if hand one wins", "AKQJT", "23456", true},
+		{"Returns false if hand two wins", "23456", "AKQJT", false},
+		{"Return true if hand one wins with a pair", "AA234", "A2345", true},
+		{"Return false if hand two wins with full house vs two pair", "AA233", "AAA44", false},
+		{"Returns true if hand one wins with higher leading card", "A2364", "A2345", true},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			actual := doesHandWin(test.hand1, test.hand2)
+
+			if actual != test.expected {
+				t.Errorf("Expected %t, got %t", test.expected, actual)
+			}
+		})
+	}
+}
