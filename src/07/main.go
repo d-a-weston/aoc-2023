@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"sort"
+	"strconv"
 )
 
 var handTypes = map[int]string{
@@ -38,13 +40,40 @@ func main() {
 
 	fileScanner := bufio.NewScanner(file)
 
+	hands := []struct {
+		hand string
+		bid  int
+	}{}
+
 	for fileScanner.Scan() {
 		line := fileScanner.Text()
 
-		fmt.Println(line)
+		bid, _ := strconv.Atoi(line[6:])
+
+		newHand := struct {
+			hand string
+			bid  int
+		}{
+			hand: line[:5],
+			bid:  bid,
+		}
+
+		hands = append(hands, newHand)
 	}
 
 	file.Close()
+
+	sort.Slice(hands, func(i, j int) bool {
+		return doesHandWin(hands[i].hand, hands[j].hand)
+	})
+
+	total := 0
+
+	for i, hand := range hands {
+		total += hand.bid * (len(hands) - i)
+	}
+
+	fmt.Println(total)
 }
 
 func getHandType(hand string) int {
