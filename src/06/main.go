@@ -13,8 +13,8 @@ func main() {
 
 	fileScanner := bufio.NewScanner(file)
 
-	raceTimes := []int{}
-	raceDistances := []int{}
+	var raceTime string
+	var raceDistance string
 
 	for fileScanner.Scan() {
 		line := fileScanner.Text()
@@ -23,26 +23,23 @@ func main() {
 
 		if lineSplit[0] == "Time:" {
 			for _, time := range lineSplit[1:] {
-				timeInt, _ := strconv.Atoi(time)
-				raceTimes = append(raceTimes, timeInt)
+				raceTime += time
 			}
 		}
 
 		if lineSplit[0] == "Distance:" {
 			for _, distance := range lineSplit[1:] {
-				distanceInt, _ := strconv.Atoi(distance)
-				raceDistances = append(raceDistances, distanceInt)
+				raceDistance += distance
 			}
 		}
 	}
 
 	file.Close()
 
-	total := 1
+	time, _ := strconv.Atoi(raceTime)
+	distance, _ := strconv.Atoi(raceDistance)
 
-	for i := 0; i < len(raceTimes); i++ {
-		total *= numValidSolutions(raceTimes[i], raceDistances[i])
-	}
+	total := numValidSolutions(time, distance)
 
 	fmt.Println(total)
 }
