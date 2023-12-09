@@ -25,7 +25,7 @@ func main() {
 			lineAsInts = append(lineAsInts, vInt)
 		}
 
-		total += findNextValue(lineAsInts)
+		total += findPreviousValue(lineAsInts)
 	}
 
 	fmt.Println(total)
