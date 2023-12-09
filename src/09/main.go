@@ -51,6 +51,14 @@ func findNextValue(sequence []int) int {
 	return sequence[len(sequence)-1] + findNextValue(sequenceDiff(sequence))
 }
 
+func findPreviousValue(sequence []int) int {
+	if All(sequence, func(x int) bool { return x == 0 }) {
+		return 0
+	}
+
+	return sequence[0] - findPreviousValue(sequenceDiff(sequence))
+}
+
 func All[T any](ts []T, pred func(T) bool) bool {
 	for _, t := range ts {
 		if !pred(t) {

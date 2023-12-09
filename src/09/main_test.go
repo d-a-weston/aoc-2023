@@ -55,3 +55,28 @@ func TestFindNextValue(t *testing.T) {
 		})
 	}
 }
+
+func TestFindPreviousValue(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []int
+		expected int
+	}{
+		{"First example", []int{0, 3, 6, 9, 12, 15}, -3},
+		{"Second example", []int{3, 3, 3, 3, 3}, 3},
+		{"Third example", []int{10, 13, 16, 21, 30, 45}, 5},
+		{"Fourth example", []int{3, 3, 5, 9, 15}, 5},
+		{"Fifth example", []int{0, 2, 4, 6}, -2},
+		{"Sixth example", []int{2, 2, 2}, 2},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			actual := findPreviousValue(test.input)
+
+			if actual != test.expected {
+				t.Errorf("Expected %v, got %v", test.expected, actual)
+			}
+		})
+	}
+}
