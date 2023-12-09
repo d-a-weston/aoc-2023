@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 )
 
 func main() {
@@ -13,6 +14,7 @@ func main() {
 	fileScanner := bufio.NewScanner(file)
 
 	directions := ""
+	startingPositions := []string{}
 	maps := map[string]map[string]string{}
 	lineNumber := 0
 
@@ -31,6 +33,10 @@ func main() {
 				"L": string(matches[1]),
 				"R": string(matches[2]),
 			}
+
+			if strings.HasSuffix(string(matches[0]), "A") {
+				startingPositions = append(startingPositions, string(matches[0]))
+			}
 		}
 
 		lineNumber++
@@ -38,21 +44,37 @@ func main() {
 
 	steps := 0
 	currentStep := 0
-	currentMap := "AAA"
+	currentMaps := startingPositions
 
-	for currentMap != "ZZZ" {
+	for !All(currentMaps, func(m string) bool { return strings.HasSuffix(m, "Z") }) {
 		steps++
 
-		currentMap = maps[currentMap][string(directions[currentStep])]
+		nextMaps := []string{}
+
+		for _, m := range currentMaps {
+			nextMaps = append(nextMaps, maps[m][string(directions[currentStep])])
+		}
 
 		if currentStep == len(directions)-1 {
 			currentStep = 0
 		} else {
 			currentStep++
 		}
+
+		currentMaps = nextMaps
+		fmt.Printf("%d: %v\n", steps, nextMaps)
 	}
 
 	fmt.Println(steps)
 
 	file.Close()
+}
+
+func All[T any](ts []T, pred func(T) bool) bool {
+	for _, t := range ts {
+		if !pred(t) {
+			return false
+		}
+	}
+	return true
 }
