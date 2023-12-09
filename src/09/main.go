@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -11,11 +13,22 @@ func main() {
 
 	fileScanner := bufio.NewScanner(file)
 
+	total := 0
+
 	for fileScanner.Scan() {
 		line := fileScanner.Text()
 
-		fmt.Println(line)
+		lineAsInts := []int{}
+
+		for _, v := range strings.Fields(line) {
+			vInt, _ := strconv.Atoi(v)
+			lineAsInts = append(lineAsInts, vInt)
+		}
+
+		total += findNextValue(lineAsInts)
 	}
+
+	fmt.Println(total)
 
 	file.Close()
 }
