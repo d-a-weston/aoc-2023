@@ -42,27 +42,16 @@ func main() {
 		lineNumber++
 	}
 
-	steps := 0
-	currentStep := 0
-	currentMaps := startingPositions
+	stepsPerPath := []int{}
 
-	for !All(currentMaps, func(m string) bool { return strings.HasSuffix(m, "Z") }) {
-		steps++
+	for _, startingPosition := range startingPositions {
+		stepsPerPath = append(stepsPerPath, getNumSteps(maps, directions, startingPosition))
+	}
 
-		nextMaps := []string{}
+	steps := 1
 
-		for _, m := range currentMaps {
-			nextMaps = append(nextMaps, maps[m][string(directions[currentStep])])
-		}
-
-		if currentStep == len(directions)-1 {
-			currentStep = 0
-		} else {
-			currentStep++
-		}
-
-		currentMaps = nextMaps
-		fmt.Printf("%d: %v\n", steps, nextMaps)
+	for _, step := range stepsPerPath {
+		steps = leastCommonMultiple(steps, step)
 	}
 
 	fmt.Println(steps)
@@ -70,11 +59,34 @@ func main() {
 	file.Close()
 }
 
-func All[T any](ts []T, pred func(T) bool) bool {
-	for _, t := range ts {
-		if !pred(t) {
-			return false
+func getNumSteps(maps map[string]map[string]string, directions string, startingPosition string) int {
+	steps := 0
+	currentStep := 0
+	currentMap := startingPosition
+
+	for !strings.HasSuffix(currentMap, "Z") {
+		steps++
+
+		currentMap = maps[currentMap][string(directions[currentStep])]
+
+		if currentStep == len(directions)-1 {
+			currentStep = 0
+		} else {
+			currentStep++
 		}
 	}
-	return true
+
+	return steps
+}
+
+func greatestCommonDivisor(a, b int) int {
+	if b == 0 {
+		return a
+	}
+
+	return greatestCommonDivisor(b, a%b)
+}
+
+func leastCommonMultiple(a, b int) int {
+	return (a / greatestCommonDivisor(a, b)) * b
 }
