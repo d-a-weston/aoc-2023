@@ -13,7 +13,7 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 
-	pipes := [][]string{}
+	field := [][]string{}
 	startX := 0
 	startY := 0
 
@@ -29,15 +29,15 @@ func main() {
 			startY = lineNum
 		}
 
-		pipes = append(pipes, line)
+		field = append(field, line)
 
 		lineNum++
 	}
 
 	direction := "down"
+	pipes := map[string]bool{}
 	curX := startX
 	curY := startY
-	steps := 0
 	backToStart := false
 
 	for !backToStart {
@@ -51,18 +51,32 @@ func main() {
 			curX++
 		}
 
-		fmt.Printf("curX: %d, curY: %d\n", curX, curY)
+		direction = setDirection(field[curY][curX], direction)
 
-		direction = setDirection(pipes[curY][curX], direction)
+		pipes[fmt.Sprintf("%d,%d", curY, curX)] = true
 
-		steps++
-
-		if pipes[curY][curX] == "S" {
+		if field[curY][curX] == "S" {
 			backToStart = true
 		}
 	}
 
-	fmt.Println(steps / 2)
+	contained := 0
+	walls := []string{"|", "L", "J", "S"}
+
+	for y := range field {
+		inside := false
+		for x := range field[y] {
+			if !pipes[fmt.Sprintf("%d,%d", y, x)] {
+				if inside {
+					contained++
+				}
+			} else if slices.Contains(walls, field[y][x]) {
+				inside = !inside
+			}
+		}
+	}
+
+	fmt.Println(contained)
 
 	file.Close()
 }
