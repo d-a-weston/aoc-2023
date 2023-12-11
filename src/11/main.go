@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"slices"
 	"strings"
@@ -23,84 +24,68 @@ func main() {
 
 	file.Close()
 
+	emptyRows := []int{}
+	emptyCols := []int{}
+
 	// Expand Starfield
 	for y := 0; y < len(starfield); y++ {
 		if !slices.Contains(starfield[y], "#") {
-			starfield = slices.Insert(starfield, y, starfield[y])
-			y++
+			emptyRows = append(emptyRows, y)
 		}
 	}
 
-	vertContainsStar := false
-
 	for x := 0; x < len(starfield[0]); x++ {
+		hasGalaxy := false
+
 		for y := 0; y < len(starfield); y++ {
 			if starfield[y][x] == "#" {
-				vertContainsStar = true
+				hasGalaxy = true
+
+				break
 			}
 		}
 
-		if !vertContainsStar {
-			for y := 0; y < len(starfield); y++ {
-				starfield[y] = slices.Insert(starfield[y], x, ".")
-			}
-
-			x++
+		if !hasGalaxy {
+			emptyCols = append(emptyCols, x)
 		}
 
-		vertContainsStar = false
+		hasGalaxy = false
 	}
 
 	planets := []struct{ x, y int }{}
+	spaceDistortion := 1000000
 
 	for y := 0; y < len(starfield); y++ {
+		fmt.Println(starfield[y])
+
 		for x := 0; x < len(starfield[y]); x++ {
 			if starfield[y][x] == "#" {
-				planets = append(planets, struct{ x, y int }{x, y})
+				distortionX := 0
+				distortionY := 0
+
+				for _, v := range emptyRows {
+					if y > v {
+						distortionY += spaceDistortion - 1
+					}
+				}
+
+				for _, v := range emptyCols {
+					if x > v {
+						distortionX += spaceDistortion - 1
+					}
+				}
+
+				planets = append(planets, struct{ x, y int }{x + distortionX, y + distortionY})
 			}
-		}
-	}
-
-	planetPairs := [][]struct{ x, y int }{}
-
-	for i := 0; i < len(planets); i++ {
-		for j := i + 1; j < len(planets); j++ {
-			planetPairs = append(planetPairs, []struct{ x, y int }{planets[i], planets[j]})
 		}
 	}
 
 	totalSteps := 0
 
-	for _, pair := range planetPairs {
-		steps := 0
-
-		for pair[0].x != pair[1].x || pair[0].y != pair[1].y {
-			if pair[0].x < pair[1].x {
-				pair[0].x++
-
-				steps++
-			}
-
-			if pair[0].x > pair[1].x {
-				pair[0].x--
-
-				steps++
-			}
-
-			if pair[0].y < pair[1].y {
-				pair[0].y++
-
-				steps++
-			}
-
-			if pair[0].y > pair[1].y {
-				pair[0].y--
-
-				steps++
-			}
+	for i := 0; i < len(planets); i++ {
+		for j := i + 1; j < len(planets); j++ {
+			totalSteps += int(math.Abs(float64(planets[i].x)-float64(planets[j].x)) + math.Abs(float64(planets[i].y)-float64(planets[j].y)))
 		}
-
-		totalSteps += steps
 	}
 
 	fmt.Println(totalSteps)
