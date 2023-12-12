@@ -29,7 +29,28 @@ func main() {
 			groups = append(groups, groupAsInt)
 		}
 
-		total += numPossibleConfigurations(config, groups)
+		unfoldedConfig := []string{}
+		unfoldedGroups := []int{}
+
+		numFolds := 5
+
+		for i := 0; i < numFolds; i++ {
+			unfoldedConfig = append(unfoldedConfig, config)
+			unfoldedGroups = append(unfoldedGroups, groups...)
+		}
+
+		config = strings.Join(unfoldedConfig, "?")
+		groups = unfoldedGroups
+
+		var cache [][]int
+		for i := 0; i < len(config); i++ {
+			cache = append(cache, make([]int, len(groups)+1))
+			for j := 0; j < len(groups)+1; j++ {
+				cache[i][j] = -1
+			}
+		}
+
+		total += numPossibleConfigurations(0, 0, config, groups, cache)
 	}
 
 	fmt.Println(total)
@@ -37,36 +58,50 @@ func main() {
 	file.Close()
 }
 
-func numPossibleConfigurations(config string, groups []int) int {
-	if config == "" {
-		if len(groups) == 0 {
-			return 1
-		}
-		return 0
-	}
-
-	if len(groups) == 0 {
-		if strings.Contains(config, "#") {
+func numPossibleConfigurations(i int, j int, config string, groups []int, cache [][]int) int {
+	if i >= len(config) {
+		if j < len(groups) {
 			return 0
 		}
+
 		return 1
+	}
+
+	if cache[i][j] != -1 {
+		return cache[i][j]
 	}
 
 	result := 0
 
-	if config[0] == '.' || config[0] == '?' {
-		result += numPossibleConfigurations(config[1:], groups)
-	}
+	if config[i] == '.' {
+		result = numPossibleConfigurations(i+1, j, config, groups, cache)
+	} else {
+		if config[i] == '?' {
+			result += numPossibleConfigurations(i+1, j, config, groups, cache)
+		}
 
-	if config[0] == '#' || config[0] == '?' {
-		if groups[0] <= len(config) && !strings.Contains(config[:groups[0]], ".") && (groups[0] == len(config) || config[groups[0]] != '#') {
-			if groups[0] == len(config) {
-				result += numPossibleConfigurations("", groups[1:])
-			} else {
-				result += numPossibleConfigurations(config[groups[0]+1:], groups[1:])
+		if j < len(groups) {
+			count := 0
+
+			for k := i; k < len(config); k++ {
+				if count > groups[j] || config[k] == '.' || count == groups[j] && config[k] == '?' {
+					break
+				}
+
+				count++
+			}
+
+			if count == groups[j] {
+				if i+count < len(config) && config[i+count] != '#' {
+					result += numPossibleConfigurations(i+count+1, j+1, config, groups, cache)
+				} else {
+					result += numPossibleConfigurations(i+count, j+1, config, groups, cache)
+				}
 			}
 		}
 	}
+
+	cache[i][j] = result
 
 	return result
 }
