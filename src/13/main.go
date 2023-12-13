@@ -60,13 +60,20 @@ func main() {
 func checkForVerticalMirror(pattern [][]string) int {
 	for i := 0; i < len(pattern[0])-1; i++ {
 		pointer := i
+		numDiffs := 0
 
 		for j := i + 1; j <= len(pattern[0]); j++ {
 			if pointer < 0 || j == len(pattern[0]) {
+				if numDiffs == 0 {
+					break
+				}
+
 				return i + 1
 			}
 
-			if !doSlicesMatch(getColumnSlice(pattern, pointer), getColumnSlice(pattern, j)) {
+			numDiffs += sliceDiffs(getColumnSlice(pattern, pointer), getColumnSlice(pattern, j))
+
+			if numDiffs > 1 {
 				break
 			}
 
@@ -90,13 +97,20 @@ func getColumnSlice(pattern [][]string, col int) []string {
 func checkForHorizontalMirror(pattern [][]string) int {
 	for i := 0; i < len(pattern)-1; i++ {
 		pointer := i
+		numDiffs := 0
 
 		for j := i + 1; j <= len(pattern); j++ {
 			if pointer < 0 || j == len(pattern) {
+				if numDiffs == 0 {
+					break
+				}
+
 				return i + 1
 			}
 
-			if !doSlicesMatch(pattern[pointer], pattern[j]) {
+			numDiffs += sliceDiffs(pattern[pointer], pattern[j])
+
+			if numDiffs > 1 {
 				break
 			}
 
@@ -107,16 +121,14 @@ func checkForHorizontalMirror(pattern [][]string) int {
 	return -1
 }
 
-func doSlicesMatch(slice1 []string, slice2 []string) bool {
-	if len(slice1) != len(slice2) {
-		return false
-	}
+func sliceDiffs(slice1 []string, slice2 []string) int {
+	numDiffs := 0
 
 	for i, val := range slice1 {
 		if val != slice2[i] {
-			return false
+			numDiffs++
 		}
 	}
 
-	return true
+	return numDiffs
 }
