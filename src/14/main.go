@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -20,7 +22,27 @@ func main() {
 		board = append(board, strings.Split(line, ""))
 	}
 
-	tiltedBoard := tiltBoard(board, "north")
+	for _, row := range board {
+		fmt.Println(row)
+	}
+
+	fmt.Println()
+
+	cycles := 1000000000
+	tiltedBoard := board
+	cachedRows := map[string][]string{}
+
+	for i := 0; i < cycles; i++ {
+		if i%100000 == 0 {
+			fmt.Println(i)
+		}
+
+		tiltedBoard = tiltBoard(tiltedBoard, "north", cachedRows)
+		tiltedBoard = tiltBoard(tiltedBoard, "west", cachedRows)
+		tiltedBoard = tiltBoard(tiltedBoard, "south", cachedRows)
+		tiltedBoard = tiltBoard(tiltedBoard, "east", cachedRows)
+	}
+
 	total := 0
 
 	for i, row := range tiltedBoard {
@@ -42,7 +64,7 @@ func main() {
 	file.Close()
 }
 
-func tiltBoard(board [][]string, direction string) [][]string {
+func tiltBoard(board [][]string, direction string, cachedRows map[string][]string) [][]string {
 	tiltedBoard := [][]string{}
 
 	for i := 0; i < len(board); i++ {
@@ -51,11 +73,76 @@ func tiltBoard(board [][]string, direction string) [][]string {
 
 	if direction == "north" {
 		for i := 0; i < len(board[0]); i++ {
-			tiltedSlice := tiltSlice(getColumnSlice(board, i))
+			colSlice := getColumnSlice(board, i)
+			sliceKey := fmt.Sprintf("%v", colSlice)
+			tiltedSlice := []string{}
+
+			if cachedRows[sliceKey] != nil {
+				tiltedSlice = cachedRows[sliceKey]
+			} else {
+				tiltedSlice = tiltSlice(colSlice)
+				cachedRows[sliceKey] = tiltedSlice
+			}
 
 			for j := 0; j < len(tiltedSlice); j++ {
 				tiltedBoard[j] = append(tiltedBoard[j], tiltedSlice[j])
 			}
+		}
+	}
+
+	if direction == "south" {
+		for i := 0; i < len(board[0]); i++ {
+			colSlice := getColumnSlice(board, i)
+			sliceKey := fmt.Sprintf("%v", colSlice)
+			tiltedSlice := []string{}
+
+			if cachedRows[sliceKey] != nil {
+				tiltedSlice = cachedRows[sliceKey]
+			} else {
+				slices.Reverse(colSlice)
+				tiltedSlice = tiltSlice(colSlice)
+				cachedRows[sliceKey] = tiltedSlice
+			}
+
+			for j := 0; j < len(tiltedSlice); j++ {
+				tiltedBoard[len(tiltedSlice)-j-1] = append(tiltedBoard[len(tiltedSlice)-j-1], tiltedSlice[j])
+			}
+		}
+	}
+
+	if direction == "east" {
+		for i := 0; i < len(board); i++ {
+			rowSlice := board[i]
+			sliceKey := fmt.Sprintf("%v", rowSlice)
+			tiltedSlice := []string{}
+
+			if cachedRows[sliceKey] != nil {
+				tiltedSlice = cachedRows[sliceKey]
+			} else {
+				slices.Reverse(rowSlice)
+				tiltedSlice = tiltSlice(rowSlice)
+				slices.Reverse(tiltedSlice)
+				cachedRows[sliceKey] = tiltedSlice
+			}
+
+			tiltedBoard[i] = tiltedSlice
+		}
+	}
+
+	if direction == "west" {
+		for i := 0; i < len(board); i++ {
+			rowSlice := board[i]
+			sliceKey := fmt.Sprintf("%v", rowSlice)
+			tiltedSlice := []string{}
+
+			if cachedRows[sliceKey] != nil {
+				tiltedSlice = cachedRows[sliceKey]
+			} else {
+				tiltedSlice = tiltSlice(rowSlice)
+				cachedRows[sliceKey] = tiltedSlice
+			}
+
+			tiltedBoard[i] = tiltedSlice
 		}
 	}
 
