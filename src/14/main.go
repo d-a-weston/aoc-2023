@@ -4,9 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"slices"
 	"strings"
-	"time"
 )
 
 func main() {
@@ -22,26 +20,36 @@ func main() {
 		board = append(board, strings.Split(line, ""))
 	}
 
-	for _, row := range board {
-		fmt.Println(row)
-	}
-
-	fmt.Println()
+	board = rotateLeft(board)
 
 	cycles := 1000000000
 	tiltedBoard := board
-	cachedRows := map[string][]string{}
 
-	for i := 0; i < cycles; i++ {
-		if i%100000 == 0 {
-			fmt.Println(i)
+	cachedBoards := map[string]int{}
+	i := 0
+	cycleStart := 0
+
+	for ; i < cycles; i++ {
+		tiltedBoard = spinBoard(tiltedBoard)
+
+		boardKey := createBoardKey(tiltedBoard)
+		val, ok := cachedBoards[boardKey]
+
+		if ok {
+			cycleStart = val
+			break
+		} else {
+			cachedBoards[boardKey] = i
 		}
-
-		tiltedBoard = tiltBoard(tiltedBoard, "north", cachedRows)
-		tiltedBoard = tiltBoard(tiltedBoard, "west", cachedRows)
-		tiltedBoard = tiltBoard(tiltedBoard, "south", cachedRows)
-		tiltedBoard = tiltBoard(tiltedBoard, "east", cachedRows)
 	}
+
+	cyclesRemaining := (cycles - i - 1) % (i - cycleStart)
+
+	for j := 0; j < cyclesRemaining; j++ {
+		tiltedBoard = spinBoard(tiltedBoard)
+	}
+
+	tiltedBoard = rotateRight(tiltedBoard)
 
 	total := 0
 
@@ -55,8 +63,6 @@ func main() {
 		}
 
 		total += numStones * (len(tiltedBoard) - i)
-
-		fmt.Println(row)
 	}
 
 	fmt.Println(total)
@@ -64,86 +70,34 @@ func main() {
 	file.Close()
 }
 
-func tiltBoard(board [][]string, direction string, cachedRows map[string][]string) [][]string {
+func spinBoard(tiltedBoard [][]string) [][]string {
+	tiltedBoard = tiltBoard(tiltedBoard)
+	tiltedBoard = rotateRight(tiltedBoard)
+
+	tiltedBoard = tiltBoard(tiltedBoard)
+	tiltedBoard = rotateRight(tiltedBoard)
+
+	tiltedBoard = tiltBoard(tiltedBoard)
+	tiltedBoard = rotateRight(tiltedBoard)
+
+	tiltedBoard = tiltBoard(tiltedBoard)
+	tiltedBoard = rotateRight(tiltedBoard)
+
+	return tiltedBoard
+}
+
+func tiltBoard(board [][]string) [][]string {
 	tiltedBoard := [][]string{}
 
 	for i := 0; i < len(board); i++ {
 		tiltedBoard = append(tiltedBoard, []string{})
 	}
 
-	if direction == "north" {
-		for i := 0; i < len(board[0]); i++ {
-			colSlice := getColumnSlice(board, i)
-			sliceKey := fmt.Sprintf("%v", colSlice)
-			tiltedSlice := []string{}
-
-			if cachedRows[sliceKey] != nil {
-				tiltedSlice = cachedRows[sliceKey]
-			} else {
-				tiltedSlice = tiltSlice(colSlice)
-				cachedRows[sliceKey] = tiltedSlice
-			}
-
-			for j := 0; j < len(tiltedSlice); j++ {
-				tiltedBoard[j] = append(tiltedBoard[j], tiltedSlice[j])
-			}
-		}
-	}
-
-	if direction == "south" {
-		for i := 0; i < len(board[0]); i++ {
-			colSlice := getColumnSlice(board, i)
-			sliceKey := fmt.Sprintf("%v", colSlice)
-			tiltedSlice := []string{}
-
-			if cachedRows[sliceKey] != nil {
-				tiltedSlice = cachedRows[sliceKey]
-			} else {
-				slices.Reverse(colSlice)
-				tiltedSlice = tiltSlice(colSlice)
-				cachedRows[sliceKey] = tiltedSlice
-			}
-
-			for j := 0; j < len(tiltedSlice); j++ {
-				tiltedBoard[len(tiltedSlice)-j-1] = append(tiltedBoard[len(tiltedSlice)-j-1], tiltedSlice[j])
-			}
-		}
-	}
-
-	if direction == "east" {
-		for i := 0; i < len(board); i++ {
-			rowSlice := board[i]
-			sliceKey := fmt.Sprintf("%v", rowSlice)
-			tiltedSlice := []string{}
-
-			if cachedRows[sliceKey] != nil {
-				tiltedSlice = cachedRows[sliceKey]
-			} else {
-				slices.Reverse(rowSlice)
-				tiltedSlice = tiltSlice(rowSlice)
-				slices.Reverse(tiltedSlice)
-				cachedRows[sliceKey] = tiltedSlice
-			}
-
-			tiltedBoard[i] = tiltedSlice
-		}
-	}
-
-	if direction == "west" {
-		for i := 0; i < len(board); i++ {
-			rowSlice := board[i]
-			sliceKey := fmt.Sprintf("%v", rowSlice)
-			tiltedSlice := []string{}
-
-			if cachedRows[sliceKey] != nil {
-				tiltedSlice = cachedRows[sliceKey]
-			} else {
-				tiltedSlice = tiltSlice(rowSlice)
-				cachedRows[sliceKey] = tiltedSlice
-			}
-
-			tiltedBoard[i] = tiltedSlice
-		}
+	for i := 0; i < len(board); i++ {
+		rowSlice := board[i]
+		tiltedSlice := []string{}
+		tiltedSlice = tiltSlice(rowSlice)
+		tiltedBoard[i] = tiltedSlice
 	}
 
 	return tiltedBoard
@@ -172,12 +126,44 @@ func tiltSlice(slice []string) []string {
 	return slice
 }
 
-func getColumnSlice(pattern [][]string, col int) []string {
-	columnSlice := []string{}
-
-	for _, row := range pattern {
-		columnSlice = append(columnSlice, row[col])
+func rotateRight(matrix [][]string) [][]string {
+	n := len(matrix)
+	if n == 0 || len(matrix[0]) == 0 {
+		return matrix
 	}
 
-	return columnSlice
+	result := make([][]string, len(matrix[0]))
+	for i := range result {
+		result[i] = make([]string, n)
+		for j := range result[i] {
+			result[i][j] = matrix[n-j-1][i]
+		}
+	}
+	return result
+}
+
+func rotateLeft(matrix [][]string) [][]string {
+	n := len(matrix)
+	if n == 0 || len(matrix[0]) == 0 {
+		return matrix
+	}
+
+	result := make([][]string, len(matrix[0]))
+	for i := range result {
+		result[i] = make([]string, n)
+		for j := range result[i] {
+			result[i][j] = matrix[j][n-i-1]
+		}
+	}
+	return result
+}
+
+func createBoardKey(board [][]string) string {
+	key := ""
+
+	for _, row := range board {
+		key += fmt.Sprintf("%v", row)
+	}
+
+	return key
 }
