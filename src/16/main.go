@@ -7,6 +7,12 @@ import (
 	"strings"
 )
 
+type Beam struct {
+	x   int
+	y   int
+	dir string
+}
+
 func main() {
 	file, _ := os.Open("input.txt")
 
@@ -22,6 +28,46 @@ func main() {
 		fmt.Println(line)
 	}
 
+	bestBeam := 0
+
+	for y, row := range mirrorGrid {
+		for x, _ := range row {
+			if y == 0 {
+				beamScore := followBeam(Beam{x: x, y: y, dir: "down"}, mirrorGrid)
+				if beamScore > bestBeam {
+					bestBeam = beamScore
+				}
+			}
+
+			if y == len(mirrorGrid)-1 {
+				beamScore := followBeam(Beam{x: x, y: y, dir: "up"}, mirrorGrid)
+				if beamScore > bestBeam {
+					bestBeam = beamScore
+				}
+			}
+
+			if x == 0 {
+				beamScore := followBeam(Beam{x: x, y: y, dir: "right"}, mirrorGrid)
+				if beamScore > bestBeam {
+					bestBeam = beamScore
+				}
+			}
+
+			if x == len(row)-1 {
+				beamScore := followBeam(Beam{x: x, y: y, dir: "left"}, mirrorGrid)
+				if beamScore > bestBeam {
+					bestBeam = beamScore
+				}
+			}
+		}
+	}
+
+	fmt.Println(bestBeam)
+
+	file.Close()
+}
+
+func followBeam(beam Beam, mirrorGrid [][]string) int {
 	energisedTiles := map[string]int{}
 
 	dirs := map[string][]int{
@@ -31,17 +77,7 @@ func main() {
 		"left":  {-1, 0},
 	}
 
-	type Beam struct {
-		x   int
-		y   int
-		dir string
-	}
-
-	beams := []Beam{{
-		x:   0,
-		y:   0,
-		dir: "right",
-	}}
+	beams := []Beam{beam}
 
 	for len(beams) > 0 {
 		beam := beams[0]
@@ -96,10 +132,5 @@ func main() {
 			beam.y += dirs[beam.dir][1]
 		}
 	}
-
-	total := len(energisedTiles)
-
-	fmt.Println(total)
-
-	file.Close()
+	return len(energisedTiles)
 }
